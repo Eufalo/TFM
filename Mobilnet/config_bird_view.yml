@@ -1,0 +1,16 @@
+image_parameters:
+  height_og: 700
+  img_path: bird_eye_img.png
+  p1:
+  - 0
+  - 0
+  p2:
+  - 700
+  - 0
+  p3:
+  - 0
+  - 800
+  p4:
+  - 700
+  - 800
+  width_og: 700
