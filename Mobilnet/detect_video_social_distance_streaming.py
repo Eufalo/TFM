@@ -70,6 +70,12 @@ height = blank_image.shape[0]
 width = blank_image.shape[1]
 
 dim = (700, 400)
+
+'''
+convert pixel to meter when the video start must be press s to add one object target
+and his hight (cm) to make the coversion pixel cm
+'''
+conv_one_pixel_cm=0.0
 # loop over the frames from the video stream
 while True:
     # grab the frame from the threaded video stream and resize it
@@ -92,7 +98,12 @@ while True:
 
     # make predictions on the input frame
     start = time.time()
+    
+    
     if(detection_flag):
+        #Social distancia conversion cm to pixeles
+        social_distance_min=int(200*conv_one_pixel_cm) if conv_one_pixel_cm >0 else 50
+        print(social_distance_min)
         results = model.detect_with_image(frame, threshold=args["confidence"],
         keep_aspect_ratio=True, relative_coord=False)
 
@@ -114,7 +125,7 @@ while True:
                     # check to see if the distance between any two
                     # centroid pairs is less than the configured number
                     # of pixels
-                    if D[i, j] < 50:
+                    if D[i, j] < social_distance_min:#50
                         # update our violation set with the indexes of
                         # the centroid pairs
                         violate.add(i)
@@ -140,7 +151,9 @@ while True:
                     label = labels[r.label_id]
                     #drw bird points 
                     x,y = bird_points[0]
-                    cv2.circle(bird_view_img, (x,y), 25, color, 2)
+                    #radius for visualice the social distance 
+                    aux_circl_bird=int(social_distance_min/2) if conv_one_pixel_cm >0 else 25
+                    cv2.circle(bird_view_img, (x,y), aux_circl_bird, color, 2)
                     cv2.circle(bird_view_img, (x,y), 3, color, -1)
                     '''
                     # draw the bounding box and label on the image
@@ -150,7 +163,11 @@ while True:
                     #Centroid circle drow 
                     cv2.circle(orig, (cX, cY), 5, color, 1)
                     #Drwa social distance
-                    cv2.ellipse(orig,(cX,endY),(45,20),0,0,360,color,1)
+                    aux_elipse_d=int(social_distance_min/2) if conv_one_pixel_cm >0 else 45
+                    aux_elipse_o=int(aux_elipse_d/2.25) if conv_one_pixel_cm >0 else 20
+                    '''int(social_distance_min/3)'''
+                    print(aux_elipse_o/aux_elipse_d)
+                    cv2.ellipse(orig,(cX,endY),(aux_elipse_d,aux_elipse_o),0,0,360,color,1)
 
                     # draw the total number of social distancing violations on the
                     # output frame
@@ -178,8 +195,9 @@ while True:
         # select the bounding box of the object we want to track (make
         # sure you press ENTER or SPACE after selecting the ROI)
         box = cv2.selectROI("Frame", orig, fromCenter=False,showCrosshair=True)
-        hight = input("Type anything") 
-        print(hight,box)
+        hight = input("Target hight (cm) ") 
+        conv_one_pixel_cm =box[3]/float(hight)
+        print(conv_one_pixel_cm,hight,box)
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
