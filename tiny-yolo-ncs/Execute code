@@ -1,0 +1,1 @@
+python3 detect_realtime_tinyyolo_ncs.py --conf config/config.json --input videos/test_video.mp4
