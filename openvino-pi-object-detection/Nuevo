@@ -1,0 +1,2 @@
+python3 openvino_real_time_object_detection.py --prototxt MobileNetSSD_deploy.prototxt --model MobileNetSSD_deploy.caffemodel
+python3 detect_realtime_tinyyolo_ncs.py --conf config/config.json --input videos/test_video.mp4
